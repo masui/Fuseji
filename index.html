@@ -1,0 +1,154 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>なぞなぞ伏字サービス</title>
+<link rel="stylesheet" href="http://fuseji.com/fuseji.css" type="text/css">
+<script language="JavaScript" src="http://fuseji.com/fuseji.js"></script>
+</head>
+<body>
+
+<h1>fuseji.com - なぞなぞ伏字サービス</h1>
+
+公開すると問題があるかもしれない固有名詞などを
+「<span class='fuseji' id='masui'></span>」
+のような「伏字」にすることがありますが、
+特定の人には公開したいことも考えられます。
+<b>なぞなぞ伏字サービス</b>を利用すると、特定の順番で
+■
+をクリックすることにより<b>中身を公開できる伏字</b>を利用することができます。
+たとえば、上の4個の
+■
+には解読シーケンス「1234」が登録されており、
+■
+を左側から順番にクリックすることによって
+伏字の中身が公開されます。
+
+<!--「<span class='fuseji' id='masui2'></span>」-->
+
+<h2>伏字の作成と利用</h2>
+
+上のような伏字は
+<pre>
+<code>&lt;span class='fuseji' id='masui'>&lt;/span></code>
+</pre>
+のような、<code>fuseji</code>クラスをもつ<code>span</code>タグで生成します。
+<b><code>id</code></b>
+、
+<b>伏字の中身</b>
+及び
+<b>解読シーケンス</b>
+は以下のフォームで登録します。
+
+<blockquote>
+<table>
+<tr><td><b><code>id</code></b></td><td><input id='id' type='text' value='test'></td><td>英数字</tr></tr>
+<tr><td><b>伏字の中身</b></td><td><input id='string' type='text' value='秘密の文字列'></td><td>任意の文字列</td></tr>
+<tr><td><b>解読シーケンス</b></td><td><input id='sequence' type='text' value='12321'></td><td>1〜4の数字の列 / 長さは任意</td></tr>
+<tr><td><input id='submit' type='submit' value='登録'></td></tr>
+</table>
+</blockquote>
+
+貼り付け文字列は
+<input id='sample' type='text' size=40>
+となり、利用例は
+<span id='test'><span class='fuseji' id='fuseji'></span></span>
+のようになります。
+
+<p>
+なぞなぞ伏字を利用するページでは先頭で以下のJavaScriptを読み込んで下さい。
+
+<pre>
+&lt;script language="JavaScript" src="http://fuseji.com/fuseji.js">&lt;/script>
+</pre>
+
+<h2>利用例</h2>
+
+ブログの中で<a href="http://pitecan.com/blog/2010/04/blog-post.html">このように</a>利用することができます。
+
+<h2>注意</h2>
+
+<ul>
+<li>
+<b>伏字の中身</b>と<b>解読シーケンス</b>は
+<a href="http://fuseji.com">fuseji.com</a>
+のデータベースに登録されます。読み出すことはできません。
+<li>
+<b><code>id</code></b>はユニークな名前を使って下さい。
+<li>
+同じ伏字を複数の場所で利用したい場合は、
+2個目以降の<b><code>id</code></b>として
+<code>test1</code>,
+<code>test2</code>, ...
+などのように数字を追加した<b><code>id</code></b>を利用して下さい。
+<li>伏字のフォーマットは
+「■■■■」
+に固定されています。
+<li>IE, Firefox, Chrome, Safariでの動作を確認しています。
+<li>なぞなぞ伏字サービスにご興味のある方は
+<a href="mailto:fuseji@quickml.com?cc=masui@pitecan.com&subject=ML参加&body=ML参加">メーリングリスト</a>
+に参加下さい。
+</ul>
+
+<p>
+<hr>
+$Date: 2008-11-15 13:13:00 +0900 (土, 15 11月 2008) $ Toshiyuki Masui@pitecan.com
+
+<script type="text/javascript">
+var id;
+var string;
+var sequence;
+var xmlhttp0;
+
+function setval(){
+  var s = "<span class='fuseji' id='"+id+"'></span>"
+  document.getElementById('sample').value = s;
+  document.getElementById('test').innerHTML = s;
+}
+
+function registered(){
+  var s = xmlhttp0.responseText;
+  if(xmlhttp0.readyState == 4){
+    alert('「'+s+'」の解読シーケンスが登録されました');
+  }
+}
+
+function register(){
+  var valid = true;
+  id = document.getElementById('id').value;
+  string = encodeURIComponent(document.getElementById('string').value);
+  sequence = document.getElementById('sequence').value;
+
+  if(!sequence.match(/^[1234]+$/)){
+    alert('クリックシーケンスは1から4までの数字の列を指定して下さい');
+    valid = false;
+  }
+  if(!id.match(/^[a-zA-Z0-9]+$/)){
+    alert('IDは英数字を指定して下さい');
+    valid = false;
+  }
+  if(!valid) return;
+
+  xmlhttp0 = new XMLHttpRequest();
+  xmlhttp0.open("GET", 'register.cgi?id='+id+'&string='+string+'&sequence='+sequence, true);
+  xmlhttp0.onreadystatechange = registered;
+  xmlhttp0.send(null);
+
+  setval();
+  init();
+}
+
+var submit = document.getElementById('submit');
+if(submit.addEventListener) { // W3C
+  submit.addEventListener('mousedown', register, true);
+}
+else {
+  submit.attachEvent('onmousedown', register);
+}
+
+id = document.getElementById('id').value;
+setval();
+
+</script>
+
+</body>
+</html>
